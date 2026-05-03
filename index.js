@@ -19,9 +19,12 @@ app.use(express.json());
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
-
-
 const { verifyUser } = require("./middleware/auth.middleware.js");
+
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
+
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -31,9 +34,15 @@ app.get("/", (req, res) => {
 const authRoutes = require("./routes/auth.routes.js")
 app.use("/auth", authRoutes);
 
+// Image routes
+const imageRoutes = require("./routes/image.routes.js");
+app.use("/", imageRoutes);
+
 // Album routes
 const albumRoutes = require("./routes/album.routes");
 app.use("/albums", verifyUser, albumRoutes);
+
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
