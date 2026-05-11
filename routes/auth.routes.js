@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const { setSecureCookie } = require("../services/cookie.service");
+const jwt = require("jsonwebtoken");
 const PixVault_User = require("../models/user.model");
 
 router.get("/google", (req, res) => {
@@ -64,7 +64,17 @@ router.get("/google/callback", async (req, res) => {
     // 3. Print user from DB
     console.log("DB User:", dbUser);
 
-    setSecureCookie(res, dbUser._id);
+    // setSecureCookie(res, dbUser._id);
+
+    const token = jwt.sign({ userId: dbUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
 
     // 4. Send simple response
     // res.send("Login success! Check your terminal.");
@@ -79,6 +89,11 @@ router.get("/google/callback", async (req, res) => {
       .status(500)
       .send("Failed to exchange authorization code for access token");
   }
+});
+
+router.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out" });
 });
 
 module.exports = router;
