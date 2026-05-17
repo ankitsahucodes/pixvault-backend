@@ -36,7 +36,7 @@ app.use("/auth", authRoutes);
 
 // Image routes
 const imageRoutes = require("./routes/image.routes.js");
-app.use("/", imageRoutes);
+app.use("/", verifyUser, imageRoutes);
 
 // Album routes
 const albumRoutes = require("./routes/album.routes");

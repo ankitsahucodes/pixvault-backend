@@ -10,7 +10,8 @@ const {
 // Create a new album
 router.post("/", async (req, res) => {
   try {
-    const savedAlbum = await createAlbum(req.body);
+    const savedAlbum = await createAlbum({...req.body,
+      owner: req.user.userId,});
     res
       .status(201)
       .json({ message: "Album added Successfully", album: savedAlbum });
@@ -21,8 +22,8 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const albums = await getAllAlbums();
-
+    const albums = await getAllAlbums(req.user.userId);
+    
     res.status(200).json(albums);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch albums" });

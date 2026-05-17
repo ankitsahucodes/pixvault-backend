@@ -12,9 +12,11 @@ async function createAlbum(newAlbum) {
   }
 }
 
-async function getAllAlbums() {
+async function getAllAlbums(userId) {
   try {
-    const albums = await Album.find();
+    const albums = await Album.find({
+  owner: userId,
+});
     // console.log(albums);
     return albums;
   } catch (error) {
