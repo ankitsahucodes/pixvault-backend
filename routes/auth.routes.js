@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const PixVault_User = require("../models/user.model");
 
 router.get("/google", (req, res) => {
-  const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.FRONTEND_URL}/auth/google/callback&response_type=code&scope=profile email`;
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.BACKEND_URL}/auth/google/callback&response_type=code&scope=profile email`;
 
   res.redirect(googleAuthUrl);
 });
@@ -25,7 +25,7 @@ router.get("/google/callback", async (req, res) => {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         code,
-        redirect_uri: `${process.env.FRONTEND_URL}/auth/google/callback`,
+        redirect_uri: `${process.env.BACKEND_URL}/auth/google/callback`,
         grant_type: "authorization_code",
       }),
       {
@@ -65,7 +65,7 @@ router.get("/google/callback", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "lax",
     });
 
