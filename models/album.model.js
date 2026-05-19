@@ -25,13 +25,3 @@ const albumSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Album", albumSchema);
-
-// sharedUsers: [
-//   {
-//     email: String,
-//     user: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "Pixvault_User",
-//     }
-//   }
-// ]

@@ -34,7 +34,6 @@ router.get("/google/callback", async (req, res) => {
     );
 
     accessToken = tokenResponse.data.access_token;
-    // res.cookie("access_token", accessToken);
 
     const userRes = await axios.get(
       "https://www.googleapis.com/oauth2/v2/userinfo",
@@ -49,10 +48,7 @@ router.get("/google/callback", async (req, res) => {
 
     const { id, email, name } = userRes.data;
 
-    // 1. Check if user already exists
     let dbUser = await PixVault_User.findOne({ googleId: id });
-
-    // 2. If not, create new user
     if (!dbUser) {
       dbUser = await PixVault_User.create({
         googleId: id,
@@ -61,13 +57,10 @@ router.get("/google/callback", async (req, res) => {
       });
     }
 
-    // 3. Print user from DB
     console.log("DB User:", dbUser);
 
-    // setSecureCookie(res, dbUser._id);
-
     const token = jwt.sign({ userId: dbUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "2d",
+      expiresIn: "1d",
     });
 
     res.cookie("token", token, {
@@ -75,9 +68,6 @@ router.get("/google/callback", async (req, res) => {
       secure: false,
       sameSite: "lax",
     });
-
-    // 4. Send simple response
-    // res.send("Login success! Check your terminal.");
 
     return res.redirect(`${process.env.FRONTEND_URL}`);
   } catch (error) {
@@ -95,8 +85,9 @@ const { verifyUser } = require("../middleware/auth.middleware");
 
 router.get("/me", verifyUser, async (req, res) => {
   try {
-    const user = await PixVault_User.findById(req.user.userId)
-      .select("name email");
+    const user = await PixVault_User.findById(req.user.userId).select(
+      "name email",
+    );
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -106,7 +97,6 @@ router.get("/me", verifyUser, async (req, res) => {
       success: true,
       user,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
